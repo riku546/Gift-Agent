@@ -13,29 +13,14 @@ def search_rakuten(keyword: str):
         "keyword": keyword,
     }
   
-
-    r = requests.get(base_url, params=req_body, timeout=15)
-    r.raise_for_status()
-    data = r.json()
-    items = data.get("Items", data.get("items", []))
+    # 楽天市場商品検索APIを実行する
+   
     return {
         "items": items,
     }
 
-tools = [{
-        "type": "function",
-        "function": {
-            "name": "search_rakuten",
-            "description": "楽天市場 商品検索APIのパラメータを決定する。",
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "keyword": {"type": "string", "description": "UTF-8日本語の検索キーワード"},
-                },
-                "required": ["keyword"]
-            }
-        }
-    }]
+#LLMがsearch_rakutenを呼び出すためさせるように定義する
+tools = []
 
 
 
