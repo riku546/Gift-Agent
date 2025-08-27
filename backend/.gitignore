@@ -34,3 +34,8 @@ env/
 
 # Logs
 *.log
+
+
+# file
+uploaded_files/
+chroma_db/
