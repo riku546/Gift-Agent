@@ -50,7 +50,7 @@ export default function Home() {
 
 		const formData = new FormData();
 		if (text) {
-			formData.append("text", text);
+			formData.append("user_input", text);
 		}
 		if (file) {
 			formData.append("file", file);
@@ -76,7 +76,7 @@ export default function Home() {
 	};
 
 	return (
-		<div className="flex h-screen bg-gray-900 text-white">
+		<div className="flex h-screen bg-gray-900 text-white p-5">
 			<Sidebar
 				isDrawerOpen={isDrawerOpen}
 				setIsDrawerOpen={setIsDrawerOpen}
@@ -109,7 +109,7 @@ function Sidebar({ isDrawerOpen, setIsDrawerOpen, recentChats }: SidebarProps) {
 					size="icon"
 					className="text-gray-400 hover:text-white hover:bg-gray-900"
 				>
-					<MenuIcon className="h-10 w-10" />
+					<MenuIcon sx={{ fontSize: 35 }} />
 				</Button>
 			</DrawerTrigger>
 			<DrawerContent className="bg-gray-900 border-r border-gray-700 flex flex-col mt-0 h-screen">
@@ -122,7 +122,7 @@ function Sidebar({ isDrawerOpen, setIsDrawerOpen, recentChats }: SidebarProps) {
 								size="icon"
 								className="text-gray-400 hover:text-white hover:bg-gray-900"
 							>
-								<MenuIcon className="h-10 w-10" />
+								<MenuIcon sx={{ fontSize: 30 }} />
 							</Button>
 						</DrawerClose>
 					</div>
@@ -132,7 +132,7 @@ function Sidebar({ isDrawerOpen, setIsDrawerOpen, recentChats }: SidebarProps) {
 					</DrawerHeader>
 					<Link href="/">
 						<Button className="w-full justify-start gap-2 bg-gray-900 border-gray-600 text-gray-300 hover:cursor-pointer">
-							<EditSquareIcon className="h-4 w-4" />
+							<EditSquareIcon sx={{ fontSize: 20 }} />
 							チャットを新規作成
 						</Button>
 					</Link>
@@ -231,8 +231,9 @@ function MainContent({
 									handleFileUploadAndTextSubmit(inputValue, selectedFile);
 									setInputValue("");
 								}}
+								disabled={!inputValue && !selectedFile}
 							>
-								<ArrowCircleRightIcon className="h-10 w-10" />
+								<ArrowCircleRightIcon sx={{ fontSize: 30, color: "skyblue" }} />
 							</Button>
 						</div>
 					</div>
