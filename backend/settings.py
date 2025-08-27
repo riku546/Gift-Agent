@@ -8,6 +8,7 @@ SQLALCHEMY_DATABASE_URL = 'sqlite:///sample.sqlite'
 # Pydantic Settings for environment variables
 class Settings(BaseSettings):
     OPENAI_API_KEY: str
+    RAKUTEN_APPLICATION_ID: str
 
     model_config = SettingsConfigDict(env_file='.env', extra='ignore')
 
