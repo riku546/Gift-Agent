@@ -23,6 +23,18 @@ source venv/bin/activate
  pip install -r requirements.txt
 ```
 
+### env
+#### wsl or linux
+```
+cp .env.local .env
+```
+
+#### windows
+```
+copy .env.local .env
+```
+
+
 
 
 
