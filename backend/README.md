@@ -17,20 +17,10 @@ venv/Script/activate
 source venv/bin/activate
 ```
 
-### fastapi install
-```
-pip install fastapi
-```
-
-### unicorn install
-```
-pip install "uvicorn[standard]"
-```
-
-### SQLAlchemy install
+### dependencies install
 
 ```
-pip install alembic SQLAlchemy
+ pip install -r requirements.txt
 ```
 
 

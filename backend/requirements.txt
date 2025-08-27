@@ -1,0 +1,9 @@
+fastapi
+alembic
+SQLAlchemy
+uvicorn[standard]
+langchain_chroma
+langchain_openai
+langchain_text_splitters
+langchain_community
+pydantic_settings
