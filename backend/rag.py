@@ -17,16 +17,24 @@ def rag_process_from_text(content: str, query_text: str):
     split_docs = text_splitter.split_documents(doc)
 
     # 埋め込み生成(ベクトル化)
-    
+    embeddings = OpenAIEmbeddings(model="text-embedding-3-small", api_key=settings.OPENAI_API_KEY)
 
     # 永続化先ディレクトリを作成
-    
+    persist_dir = "chroma_db"
+    os.makedirs(persist_dir, exist_ok=True)
 
     # コレクション名を一意に生成して保存
-    
+    collection_name = f"col_{uuid4().hex}"
+    vectordb = Chroma.from_documents(
+        documents=split_docs,
+        embedding=embeddings,
+        persist_directory=persist_dir,
+        collection_name=collection_name,
+    )
+
     # クエリで類似検索
     top_k = 5
     hits = vectordb.similarity_search(query_text, k=top_k)
 
     
-    return { "hits": hits}
+    return { "hits": hits } 
