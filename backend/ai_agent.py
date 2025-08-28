@@ -18,6 +18,7 @@ def search_rakuten(keyword: str):
     r.raise_for_status()
     data = r.json()
     items = data.get("Items", data.get("items", []))
+    
     return {
         "items": items,
     }
@@ -70,6 +71,8 @@ def search_rakuten_with_openai(hits, user_input: str):
         tools=tools,
         tool_choice="auto",
     )
+
+
     # gptがfunction callingを呼び出すかどうか
     choice = resp.choices[0]
     is_function_calling = choice.finish_reason == "tool_calls" and choice.message.tool_calls

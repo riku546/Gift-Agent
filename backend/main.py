@@ -1,8 +1,10 @@
 
 from fastapi import FastAPI, UploadFile, File, Form
+from models import UserModel
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from settings import SessionLocal
+from uuid import uuid4
 
 
 from rag import rag_process_from_text
@@ -11,13 +13,13 @@ from ai_agent import search_rakuten_with_openai
 app = FastAPI()
 
 # CORSミドルウェアを追加
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # フロントエンドのオリジン
-    allow_credentials=True,
-    allow_methods=["*"],  # すべてのHTTPメソッドを許可
-    allow_headers=["*"],  # すべてのヘッダーを許可
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["http://localhost:3000"],  # フロントエンドのオリジン
+#     allow_credentials=True,
+#     allow_methods=["*"],  # すべてのHTTPメソッドを許可
+#     allow_headers=["*"],  # すべてのヘッダーを許可
+# )
 
 
 def get_db():
@@ -54,7 +56,51 @@ async def upload_file(user_input: str = Form(...), file: UploadFile = File(...))
     return result
 
 
+@app.post('/signup')
+async def signup(user_name: str = Form(...), password:str = Form(...)):
+    db = next(get_db())
+    user_id = str(uuid4())
+    new_user = UserModel(
+        id=user_id,
+        name=user_name, password=password
+    )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
+
+@app.post('/login')
+async def login(user_name: str = Form(...), password:str = Form(...)):
+    db = next(get_db())
+    user = db.query(UserModel).filter(UserModel.name == user_name).first()
+
+
+    if user == None:
+        return 'まだ登録していません。'
+
+    if user.password != password:
+        return 'パスワードが間違っています。'
+
+    #session_tokenを更新する
+    user.session_token = str(uuid4())
+    db.commit()
+    db.refresh(user)
+
+    return user
+
+
+@app.delete("/logout")
+async def logout(user_id:str = Form(...)):
+    print(user_id)
+    db = next(get_db())
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+    print(user)
+    user.session_token = ""
+    db.commit()
+    db.refresh(user)
+
+    return user
 
 
 if __name__ == "__main__":
