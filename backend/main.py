@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import Body, FastAPI, HTTPException, UploadFile, File, Form
 from models import UserModel
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,14 +12,14 @@ from ai_agent import search_rakuten_with_openai
 
 app = FastAPI()
 
-# CORSミドルウェアを追加
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["http://localhost:3000"],  # フロントエンドのオリジン
-#     allow_credentials=True,
-#     allow_methods=["*"],  # すべてのHTTPメソッドを許可
-#     allow_headers=["*"],  # すべてのヘッダーを許可
-# )
+#CORSミドルウェアを追加
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # フロントエンドのオリジン
+    allow_credentials=True,
+    allow_methods=["*"],  # すべてのHTTPメソッドを許可
+    allow_headers=["*"],  # すべてのヘッダーを許可
+)
 
 
 def get_db():
@@ -53,6 +53,8 @@ async def upload_file(user_input: str = Form(...), file: UploadFile = File(...))
     # ai agentが楽天検索APIを呼び出す
     result = search_rakuten_with_openai(rag_result["hits"], user_input)
 
+    print(result)
+
     return result
 
 
@@ -70,17 +72,17 @@ async def signup(user_name: str = Form(...), password:str = Form(...)):
     return new_user
 
 
-@app.post('/login')
+@app.patch('/login')
 async def login(user_name: str = Form(...), password:str = Form(...)):
     db = next(get_db())
     user = db.query(UserModel).filter(UserModel.name == user_name).first()
 
 
     if user == None:
-        return 'まだ登録していません。'
+        raise HTTPException(status_code=404, detail="ユーザーが存在しません")
 
     if user.password != password:
-        return 'パスワードが間違っています。'
+        raise HTTPException(status_code=401, detail="パスワードが間違っています")
 
     #session_tokenを更新する
     user.session_token = str(uuid4())
@@ -91,17 +93,28 @@ async def login(user_name: str = Form(...), password:str = Form(...)):
 
 
 @app.delete("/logout")
-async def logout(user_id:str = Form(...)):
-    print(user_id)
+async def logout(user_id:str = Body(..., embed=True)):
     db = next(get_db())
+    print(user_id)
+ 
     user = db.query(UserModel).filter(UserModel.id == user_id).first()
-    print(user)
+
     user.session_token = ""
     db.commit()
     db.refresh(user)
 
     return user
 
+
+@app.get("/user")
+async def get_user(session_token:str = Body(..., embed=True)):
+    db = next(get_db())
+    user = db.query(UserModel).filter(UserModel.session_token == session_token).first()
+
+    if user == None:
+        raise HTTPException(status_code=404, detail="ユーザーが存在しません")
+
+    return user
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000, log_level="debug")

@@ -26,27 +26,28 @@ export default function InputComponent() {
 		formData.append("user_input", text);
 		if (file) {
 			formData.append("file", file);
+		}
 
-			try {
-				const response = await fetch("http://localhost:8000/uploadfile", {
-					method: "POST",
-					body: formData,
-				});
+		try {
+			const response = await fetch("http://localhost:8000/uploadfile", {
+				method: "POST",
+				body: formData,
+			});
 
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-
-				const result = await response.json();
-				console.log("Upload successful:", result);
-				alert("ファイルとテキストが正常にアップロードされました！");
-			} catch (error) {
-				console.error("Error uploading file and text:", error);
-				alert("ファイルのアップロード中にエラーが発生しました。");
-			} finally {
-				setInputValue("");
-				setSelectedFile(null);
+			if (!response.ok) {
+				throw new Error(`HTTP error! status: ${response.status}`);
 			}
+
+			const result = await response.json();
+			console.log(result)
+			
+			alert("ファイルとテキストが正常にアップロードされました！");
+		} catch (error) {
+			console.error("Error uploading file and text:", error);
+			alert("ファイルのアップロード中にエラーが発生しました。");
+		} finally {
+			setInputValue("");
+			setSelectedFile(null);
 		}
 	};
 

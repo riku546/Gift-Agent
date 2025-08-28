@@ -13,10 +13,30 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PersonIcon from "@mui/icons-material/Person";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export default function Sidebar() {
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const [userInfo, setUserInfo] = useState<{
+		id: string;
+		name: string;
+	} | null>(null);
+
+	useEffect(() => {
+		const fetchUserInfo = async () => {
+			const response = await fetch("http://localhost:8000/user");
+			const data = await response.json();
+
+			setUserInfo({
+				id: data.id,
+				name: data.name,
+			});
+		};
+
+		fetchUserInfo();
+	}, []);
 
 	const recentChats = [
 		"セールスプレインインダー...",
@@ -70,7 +90,7 @@ export default function Sidebar() {
 				</div>
 
 				{/* Recent Section */}
-				<div className="flex-1 px-4 py-3 overflow-y-auto">
+				<div className="flex-1 p-4 overflow-y-auto">
 					<h2 className="text-sm font-medium text-gray-400 mb-3">最近</h2>
 					<div className="space-y-1">
 						{recentChats.map((chat) => (
@@ -84,6 +104,22 @@ export default function Sidebar() {
 							</div>
 						))}
 					</div>
+				</div>
+
+				<div className="h-20 p-4">
+					{userInfo === null ? (
+						<div className="flex items-center  gap-4">
+							<ErrorIcon className="text-red-500" />
+							<Link className="text-gray-300" href={"/login"}>
+								ログインしてください
+							</Link>
+						</div>
+					) : (
+						<div className="flex items-center justify-center p-4">
+							<PersonIcon sx={{ fontSize: 20 }} />
+							<div className="text-gray-300">{userInfo.name}</div>
+						</div>
+					)}
 				</div>
 			</DrawerContent>
 		</Drawer>
