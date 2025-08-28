@@ -26,13 +26,13 @@ source venv/bin/activate
 ### env
 #### wsl or linux
 ```
-cp .env.local .env
+cp .env.example .env
 ```
 
 #### windows
 ```
 copy .env.local .env
-```
+```cp
 
 
 

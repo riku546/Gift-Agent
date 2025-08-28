@@ -10,11 +10,12 @@ from settings import settings
 # 引数: テキストデータ, 検索クエリ
 def rag_process_from_text(content: str, query_text: str):
     # ドキュメント化 
-
+    doc = Document[page_content=content]
     # テキスト分割
    
 
     # 埋め込み生成(ベクトル化)
+    
 
     # 永続化先ディレクトリを作成
 
