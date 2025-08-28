@@ -9,7 +9,7 @@ python3 -m venv venv
 ### venv有効化
 #### windows
 ```
-venv/Script/activate
+venv/Scripts/activate
 ```
 
 #### wsl or linux
@@ -32,7 +32,7 @@ cp .env.example .env
 #### windows
 ```
 copy .env.local .env
-```cp
+```
 
 
 
