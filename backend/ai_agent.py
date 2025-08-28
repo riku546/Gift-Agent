@@ -33,7 +33,22 @@ def search_rakuten(keyword: str):
    
 
 #LLMがsearch_rakutenを呼び出すためさせるように定義する
-tools = []
+tools = [
+    {
+        "name": "search_rakuten",  
+        "description": "楽天市場で商品を検索する関数。商品名・価格・URLを返します。",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "keyword": {
+                    "type": "string",
+                    "description": "検索したい商品名"
+                }
+            },
+            "required": ["keyword"]
+        }
+    }
+]
 
 
 
