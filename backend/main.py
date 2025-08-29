@@ -37,10 +37,8 @@ async def root():
 
 
 @app.post("/gift_search")
-async def gift_search(user_input: str = Form(...), text_data: str = Form(...), lat:float= Form(), lng:float = Form()):
-
-
-
+async def gift_search(user_input: str = Body(..., embed=True), text_data: str = Body(..., embed=True), lat:float= Body(..., embed=True), lng:float = Body(..., embed=True)):
+    
     # RAG処理を関数化して呼び出す
     rag_result = rag_process_from_text(text_data, user_input)
 
@@ -48,6 +46,7 @@ async def gift_search(user_input: str = Form(...), text_data: str = Form(...), l
     result1 = search_rakuten_with_openai(rag_result["hits"], user_input)
     # ai agentが画像生成APIを呼び出す
     result2 = generate_image(user_input)
+    
 
     ## ai agentがやほーAPIを呼び出す
     map_result = search_yahoo_with_openai(rag_result["hits"], user_input, lat, lng)
