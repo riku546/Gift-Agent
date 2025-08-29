@@ -7,6 +7,7 @@ from settings import SessionLocal
 
 from rag import rag_process_from_text
 from ai_agent import search_rakuten_with_openai
+from create_picture import generate_image
 
 app = FastAPI()
 
@@ -49,12 +50,15 @@ async def upload_file(user_input: str = Form(...), file: UploadFile = File(...),
     rag_result = rag_process_from_text(content, user_input)
 
     # ai agentが楽天検索APIを呼び出す
-    result = search_rakuten_with_openai(rag_result["hits"], user_input)
+    result1 = search_rakuten_with_openai(rag_result["hits"], user_input)
+    # ai agentが画像生成APIを呼び出す
+    result2 = generate_image(user_input)
 
-    ## ai agentが楽天検索APIを呼び出す
+    ## ai agentがやほーAPIを呼び出す
     map_result = search_yahoo_with_openai(rag_result["hits"], user_input, lat, lng)
 
-    return result
+
+    return {'items':result1, 'image':result2}
 
 
 
