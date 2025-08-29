@@ -1,5 +1,5 @@
 
-from fastapi import Body, FastAPI, HTTPException, UploadFile, File, Form
+from fastapi import Body, FastAPI, HTTPException, Request, UploadFile, File, Form
 from models import UserModel
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,28 +36,17 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.post("/uploadfile")
-async def upload_file(user_input: str = Form(...), file: UploadFile = File(...)):
-    # ファイルをディスクに保存せず、メモリ上で処理
-    file_bytes = await file.read()
-
-    try:
-        content = file_bytes.decode("utf-8")
-    except Exception:
-        content = file_bytes.decode("utf-8", errors="replace")
+@app.post("/gift_search")
+async def gift_search(user_input: str = Form(...), text_data: str = Form(...)):
 
 
- 
     # RAG処理を関数化して呼び出す
-    rag_result = rag_process_from_text(content, user_input)
+    rag_result = rag_process_from_text(text_data, user_input)
 
     # ai agentが楽天検索APIを呼び出す
     result1 = search_rakuten_with_openai(rag_result["hits"], user_input)
     # ai agentが画像生成APIを呼び出す
     result2 = generate_image(user_input)
-
-
-
 
     return {'items':result1, 'image':result2}
 
@@ -112,12 +101,15 @@ async def logout(user_id:str = Body(..., embed=True)):
 
 
 @app.get("/user")
-async def get_user(session_token:str = Body(..., embed=True)):
+async def get_user(request:Request):
     db = next(get_db())
+
+
+    session_token = request.headers.get("session_token")
     user = db.query(UserModel).filter(UserModel.session_token == session_token).first()
 
     if user == None:
-        raise HTTPException(status_code=404, detail="ユーザーが存在しません")
+         raise HTTPException(status_code=401, detail="ログインしてください")
 
     return user
 

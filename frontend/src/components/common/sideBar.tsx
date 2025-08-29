@@ -26,30 +26,37 @@ export default function Sidebar() {
 
 	useEffect(() => {
 		const fetchUserInfo = async () => {
-			const response = await fetch("http://localhost:8000/user");
-			const data = await response.json();
+			try {
+				const response = await fetch("http://localhost:8000/user", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						session_token: localStorage.getItem("session_token") || "",
+					},
+				});
+				const data = await response.json();
 
-			setUserInfo({
-				id: data.id,
-				name: data.name,
-			});
+				setUserInfo({
+					id: data.id,
+					name: data.name,
+				});
+			} catch {
+				setUserInfo(null);
+			}
 		};
 
 		fetchUserInfo();
 	}, []);
 
 	const recentChats = [
-		"セールスプレインインダー...",
-		"valueup",
-		"エンジニア長期インターン...",
-		"LINE履歴からの商品推薦は...",
-		"lineアプリでトーク履歴をダ...",
-		"line apiで友人の誕生日を取...",
-		"LLM生成結果のPDF化不可",
-		"GCPとGeminiを活用したソ...",
-		"RAGが存在する理由3選",
-		"MCPとAIエージェントの関係",
-		"エンジニアインターン自己P...",
+		"サンプル１",
+		"サンプル２",
+		"サンプル３",
+		"サンプル４",
+		"サンプル５",
+		"サンプル６",
+		"サンプル７",
+		"サンプル８",
 	];
 
 	return (
@@ -115,8 +122,8 @@ export default function Sidebar() {
 							</Link>
 						</div>
 					) : (
-						<div className="flex items-center justify-center p-4">
-							<PersonIcon sx={{ fontSize: 20 }} />
+						<div className="flex items-center p-4 gap-2">
+							<PersonIcon sx={{ fontSize: 30, color: "gray" }} />
 							<div className="text-gray-300">{userInfo.name}</div>
 						</div>
 					)}

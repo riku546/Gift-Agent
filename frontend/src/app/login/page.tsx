@@ -51,11 +51,15 @@ export default function SignupPage() {
 
 			if (response.ok) {
 				const newUser = await response.json();
+
+				localStorage.setItem("session_token", newUser.session_token);
+
 				setMessage({
 					type: "success",
 					text: `アカウントが正常に作成されました！ユーザーID: ${newUser.id}`,
 				});
 				setFormData({ user_name: "", password: "" });
+
 				router.push("/");
 			} else {
 				const errorData = await response.json();

@@ -11,6 +11,7 @@ def search_rakuten(keyword: str):
         "format": "json",
         "formatVersion": 2,
         "keyword": keyword,
+        "hits": 4,
     }
   
 
