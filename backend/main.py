@@ -34,7 +34,7 @@ async def root():
 
 
 @app.post("/uploadfile")
-async def upload_file(user_input: str = Form(...), file: UploadFile = File(...)):
+async def upload_file(user_input: str = Form(...), file: UploadFile = File(...), lat:float= Form(), lng:float = Form()):
     # ファイルをディスクに保存せず、メモリ上で処理
     file_bytes = await file.read()
 
@@ -50,6 +50,9 @@ async def upload_file(user_input: str = Form(...), file: UploadFile = File(...))
 
     # ai agentが楽天検索APIを呼び出す
     result = search_rakuten_with_openai(rag_result["hits"], user_input)
+
+    ## ai agentが楽天検索APIを呼び出す
+    map_result = search_yahoo_with_openai(rag_result["hits"], user_input, lat, lng)
 
     return result
 
