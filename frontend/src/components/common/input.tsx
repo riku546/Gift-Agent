@@ -7,48 +7,14 @@ import { Input } from "@/components/ui/input";
 import AddIcon from "@mui/icons-material/Add";
 import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
 
-export default function InputComponent() {
+export default function InputComponent({
+	handleClick,
+}: {
+	handleClick: (userInput: string, textFile: File | null) => void;
+}) {
 	const [inputValue, setInputValue] = useState("");
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
-
-	const handleFileUploadAndTextSubmit = async (
-		text: string,
-		file: File | null,
-	) => {
-		if (!text) {
-			console.warn("テキストが入力されていません。");
-			return;
-		}
-
-		const formData = new FormData();
-
-		formData.append("user_input", text);
-		if (file) {
-			formData.append("file", file);
-
-			try {
-				const response = await fetch("http://localhost:8000/uploadfile", {
-					method: "POST",
-					body: formData,
-				});
-
-				if (!response.ok) {
-					throw new Error(`HTTP error! status: ${response.status}`);
-				}
-
-				const result = await response.json();
-				console.log("Upload successful:", result);
-				alert("ファイルとテキストが正常にアップロードされました！");
-			} catch (error) {
-				console.error("Error uploading file and text:", error);
-				alert("ファイルのアップロード中にエラーが発生しました。");
-			} finally {
-				setInputValue("");
-				setSelectedFile(null);
-			}
-		}
-	};
 
 	return (
 		<div>
@@ -90,7 +56,9 @@ export default function InputComponent() {
 								variant="ghost"
 								className="text-gray-400  hover:bg-gray-800 hover:text-white rounded-full"
 								onClick={() => {
-									handleFileUploadAndTextSubmit(inputValue, selectedFile);
+									handleClick(inputValue, selectedFile);
+									setInputValue("");
+									setSelectedFile(null);
 								}}
 								disabled={!inputValue && !selectedFile}
 							>

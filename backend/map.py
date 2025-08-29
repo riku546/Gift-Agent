@@ -5,24 +5,26 @@ import json
 
 #yahoo地図ローカルサーチAPIで店舗検索を行う関数
 def search_map(keyword: str, lat:float, lng:float):
+    print(keyword, lat, lng)
     base_url = "https://map.yahooapis.jp/search/local/V1/localSearch"
     req_body = {
         "appid": settings.YAHOO_API_KEY,
-        "query": keyword,
-        "results": 10,
+        "query": "ケーキ",
+        "results": 3,
         "output": "json",
     }
     #現在地があれば追加
-    if lat is not None and lon is not None:
+    if lat is not None and lng is not None:
         req_body["lat"] = lat
-        req_body["lon"] = lon
+        req_body["lon"] = lng
         req_body["dist"] = 5  # 半径5km以内など指定可能
 
   
-
+    print(req_body)
     r = requests.get(base_url, params=req_body, timeout=15)
     r.raise_for_status()
     data = r.json()
+    print(data)
     stores = data.get("Feature", [])
     return {
         "stores": stores,
@@ -49,7 +51,7 @@ tools = [{
 
 
 
-def search_yahoo_with_openai(hits, user_input: str, float = None, lat: float = None, lng:float = None):
+def search_yahoo_with_openai(hits, user_input: str, lat: float = None, lng:float = None):
     """
     入力:
       - hits: RAG の類似検索で返された Document のリスト（チャンク）
@@ -69,7 +71,7 @@ def search_yahoo_with_openai(hits, user_input: str, float = None, lat: float = N
     # 4) context と user_input を組み合わせて、LLM に条件生成を依頼する
     messages = [
         {"role": "system", "content": "あなたは日本語のEC検索アシスタントです。"},
-        {"role": "user", "content": f"以下の会話文チャンクとリクエスト文から、Yahoo!マップで探すべき『プレゼント商品を買うことができる店』の検索条件を決めてください。\n\nリクエスト文:\n{user_input}\n\n会話文チャンク(抜粋):\n{context}\n\n価格帯や距離や並び順も適切に決めてください。"}
+        {"role": "user", "content": f"以下の会話文チャンクとリクエスト文から、Yahoo!マップで探すべき『プレゼント商品を買うことができる店』の検索条件を決めてください。\n\nリクエスト文:\n{user_input}\n\n会話文チャンク(抜粋):\n{context}\n\n価格帯や距離や並び順も適切に決めてください。またkeywordはなるべくシンプルな一単語にしてください。"}
     ]
 
     #gptにメッセージを送信

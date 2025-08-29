@@ -13,23 +13,50 @@ import {
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import PersonIcon from "@mui/icons-material/Person";
+import ErrorIcon from "@mui/icons-material/Error";
 
 export default function Sidebar() {
 	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const [userInfo, setUserInfo] = useState<{
+		id: string;
+		name: string;
+	} | null>(null);
+
+	useEffect(() => {
+		const fetchUserInfo = async () => {
+			try {
+				const response = await fetch("http://localhost:8000/user", {
+					method: "GET",
+					headers: {
+						"Content-Type": "application/json",
+						session_token: localStorage.getItem("session_token") || "",
+					},
+				});
+				const data = await response.json();
+
+				setUserInfo({
+					id: data.id,
+					name: data.name,
+				});
+			} catch {
+				setUserInfo(null);
+			}
+		};
+
+		fetchUserInfo();
+	}, []);
 
 	const recentChats = [
-		"セールスプレインインダー...",
-		"valueup",
-		"エンジニア長期インターン...",
-		"LINE履歴からの商品推薦は...",
-		"lineアプリでトーク履歴をダ...",
-		"line apiで友人の誕生日を取...",
-		"LLM生成結果のPDF化不可",
-		"GCPとGeminiを活用したソ...",
-		"RAGが存在する理由3選",
-		"MCPとAIエージェントの関係",
-		"エンジニアインターン自己P...",
+		"サンプル１",
+		"サンプル２",
+		"サンプル３",
+		"サンプル４",
+		"サンプル５",
+		"サンプル６",
+		"サンプル７",
+		"サンプル８",
 	];
 
 	return (
@@ -70,7 +97,7 @@ export default function Sidebar() {
 				</div>
 
 				{/* Recent Section */}
-				<div className="flex-1 px-4 py-3 overflow-y-auto">
+				<div className="flex-1 p-4 overflow-y-auto">
 					<h2 className="text-sm font-medium text-gray-400 mb-3">最近</h2>
 					<div className="space-y-1">
 						{recentChats.map((chat) => (
@@ -84,6 +111,22 @@ export default function Sidebar() {
 							</div>
 						))}
 					</div>
+				</div>
+
+				<div className="h-20 p-4">
+					{userInfo === null ? (
+						<div className="flex items-center  gap-4">
+							<ErrorIcon className="text-red-500" />
+							<Link className="text-gray-300" href={"/login"}>
+								ログインしてください
+							</Link>
+						</div>
+					) : (
+						<div className="flex items-center p-4 gap-2">
+							<PersonIcon sx={{ fontSize: 30, color: "gray" }} />
+							<div className="text-gray-300">{userInfo.name}</div>
+						</div>
+					)}
 				</div>
 			</DrawerContent>
 		</Drawer>
