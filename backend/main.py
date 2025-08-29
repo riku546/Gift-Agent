@@ -5,7 +5,7 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from settings import SessionLocal
 from uuid import uuid4
-
+from map import search_yahoo_with_openai
 
 from rag import rag_process_from_text
 from ai_agent import search_rakuten_with_openai
@@ -37,7 +37,8 @@ async def root():
 
 
 @app.post("/gift_search")
-async def gift_search(user_input: str = Form(...), text_data: str = Form(...)):
+async def gift_search(user_input: str = Form(...), text_data: str = Form(...), lat:float= Form(), lng:float = Form()):
+
 
 
     # RAG処理を関数化して呼び出す
@@ -48,7 +49,11 @@ async def gift_search(user_input: str = Form(...), text_data: str = Form(...)):
     # ai agentが画像生成APIを呼び出す
     result2 = generate_image(user_input)
 
-    return {'items':result1, 'image':result2}
+    ## ai agentがやほーAPIを呼び出す
+    map_result = search_yahoo_with_openai(rag_result["hits"], user_input, lat, lng)
+
+
+    return {'items':result1, 'image':result2, "map_items":map_result}
 
 
 
